@@ -1,9 +1,11 @@
 "use client"
-
+import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Button } from "@/components/ui/button"
+
+// import { toast } from "@/components/ui/toast"; // Assuming ChadCN UI has a toast notification component
 import {
   Form,
   FormControl,
@@ -47,6 +49,8 @@ const dateNow = new Date(Date.now()).toISOString().slice(0, 10);
 
 export default function PatientForm({ record }: { record: PatientFormDTO | null | undefined }) {
 
+  let [loading, setLoading] = useState<boolean>(false)
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,38 +63,59 @@ export default function PatientForm({ record }: { record: PatientFormDTO | null 
     }
   })
 
-  // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    //activate loader
-    console.log(values)
-    debugger;
-    console.log('todo loading')
-    try {
 
-      let userData = AppStorage.getUserData()
+async function onSubmit(values: z.infer<typeof formSchema>) {
+  // Activate loader (show loader in UI)
+  setLoading(true); // setLoading controls the state of a loader/spinner
+  console.log(values);
+  console.log('Loading...');
 
-      let response = await PatientsService.create({
-        client: client,
-        body: {
-          ...values,
-          patient_doctor_id: userData.id,
-          birthday: values.birthday.toString()
-        }
-      })
-      console.log(response)
+  try {
+    let userData = AppStorage.getUserData();
 
-      console.log('todo stop loading')
+    let response = await PatientsService.create({
+      client: client,
+      body: {
+        ...values,
+        patient_doctor_id: userData.id,
+        birthday: values.birthday.toString(),
+      },
+    });
+    console.log(response);
 
-    } catch {
-      console.log('todo stop loading')
-      console.log('todo inform user about the error')
-    }
+    // Stop loading (hide loader in UI)
+    setLoading(false);
 
+    // Show success notification
+    toast({
+      title: "Patient created",
+      description: "The patient was successfully created.",
+      status: "success",
+      duration: 3000,
+    });
+
+  } catch (error) {
+    // Stop loading (hide loader in UI)
+    setLoading(false);
+
+    // Inform user about the error
+    toast({
+      title: "Error",
+      description: "There was an error creating the patient. Please try again.",
+      status: "error",
+      duration: 3000,
+    });
+
+    console.error(error); // Log the error for debugging purposes
   }
+}
+
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" aria-disabled={loading}>
+        <fieldset>
+
         <FormField
           control={form.control}
           name="first_name"
@@ -175,7 +200,9 @@ export default function PatientForm({ record }: { record: PatientFormDTO | null 
             </FormItem>
           )}
         />
+        </fieldset>
         <Button type="submit">Submit</Button>
+
       </form>
     </Form>
   )
