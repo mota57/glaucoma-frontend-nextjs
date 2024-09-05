@@ -5,18 +5,74 @@
     "version": "0.1.0"
   },
   "paths": {
-    "/users/": {
+    "/patient/list": {
+      "get": {
+        "tags": [
+          "patients"
+        ],
+        "summary": "List",
+        "operationId": "list",
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/patient/create": {
       "post": {
         "tags": [
-          "users"
+          "patients"
         ],
-        "summary": "Create User",
-        "operationId": "create_user",
+        "summary": "Create",
+        "operationId": "create",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserCreate"
+                "$ref": "#/components/schemas/PatientCreate"
               }
             }
           },
@@ -28,7 +84,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "$ref": "#/components/schemas/PatientUpsertResponseDto"
                 }
               }
             }
@@ -49,126 +105,21 @@
         }
       }
     },
-    "/users/list": {
-      "get": {
+    "/patient/update/{patient_id}": {
+      "put": {
         "tags": [
-          "users"
+          "patients"
         ],
-        "summary": "Read Users",
-        "operationId": "read_users",
+        "summary": "Update",
+        "operationId": "update",
         "parameters": [
           {
-            "name": "skip",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 0,
-              "title": "Skip"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 100,
-              "title": "Limit"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/User"
-                  },
-                  "title": "Response Users-Read Users"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/users/{user_id}": {
-      "get": {
-        "tags": [
-          "users"
-        ],
-        "summary": "Read User",
-        "operationId": "read_user",
-        "parameters": [
-          {
-            "name": "user_id",
+            "name": "patient_id",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
-              "title": "User Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/users/{user_id}/items/": {
-      "post": {
-        "tags": [
-          "users"
-        ],
-        "summary": "Create Item For User",
-        "operationId": "create_item_for_user",
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "User Id"
+              "title": "Patient Id"
             }
           }
         ],
@@ -177,7 +128,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ItemCreate"
+                "$ref": "#/components/schemas/PatientUpdate"
               }
             }
           }
@@ -188,109 +139,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Item"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/items/": {
-      "get": {
-        "tags": [
-          "items"
-        ],
-        "summary": "Read Items",
-        "operationId": "read_items",
-        "parameters": [
-          {
-            "name": "skip",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 0,
-              "title": "Skip"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 100,
-              "title": "Limit"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Item"
-                  },
-                  "title": "Response Items-Read Items"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "items"
-        ],
-        "summary": "Create Item",
-        "operationId": "create_item",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ItemCreate"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ItemCreate"
+                  "$ref": "#/components/schemas/PatientUpsertResponseDto"
                 }
               }
             }
@@ -343,112 +192,153 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
-      "Item": {
+      "PatientCreate": {
         "properties": {
-          "title": {
-            "type": "string",
-            "title": "Title"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "id": {
+          "patient_doctor_id": {
             "type": "integer",
-            "title": "Id"
+            "title": "Patient Doctor Id"
           },
-          "owner_id": {
-            "type": "integer",
-            "title": "Owner Id"
-          }
-        },
-        "type": "object",
-        "required": [
-          "title",
-          "id",
-          "owner_id"
-        ],
-        "title": "Item"
-      },
-      "ItemCreate": {
-        "properties": {
-          "title": {
+          "first_name": {
             "type": "string",
-            "title": "Title"
+            "title": "First Name"
           },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          }
-        },
-        "type": "object",
-        "required": [
-          "title"
-        ],
-        "title": "ItemCreate"
-      },
-      "User": {
-        "properties": {
+          "last_name": {
+            "type": "string",
+            "title": "Last Name"
+          },
           "email": {
             "type": "string",
             "title": "Email"
           },
-          "id": {
-            "type": "integer",
-            "title": "Id"
+          "identification_number": {
+            "type": "string",
+            "title": "Identification Number"
           },
-          "is_active": {
-            "type": "boolean",
-            "title": "Is Active"
-          },
-          "items": {
-            "items": {
-              "$ref": "#/components/schemas/Item"
-            },
-            "type": "array",
-            "title": "Items",
-            "default": []
+          "birthday": {
+            "type": "string",
+            "format": "date",
+            "title": "Birthday"
           }
         },
         "type": "object",
         "required": [
+          "patient_doctor_id",
+          "first_name",
+          "last_name",
           "email",
-          "id",
-          "is_active"
+          "identification_number",
+          "birthday"
         ],
-        "title": "User"
+        "title": "PatientCreate"
       },
-      "UserCreate": {
+      "PatientDto": {
         "properties": {
+          "user_account_id": {
+            "type": "integer",
+            "title": "User Account Id"
+          },
+          "first_name": {
+            "type": "string",
+            "title": "First Name"
+          },
+          "last_name": {
+            "type": "string",
+            "title": "Last Name"
+          },
+          "patient_doctor_id": {
+            "type": "integer",
+            "title": "Patient Doctor Id"
+          },
+          "user_type_id": {
+            "type": "integer",
+            "title": "User Type Id"
+          },
+          "identification_number": {
+            "type": "string",
+            "title": "Identification Number"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_account_id",
+          "first_name",
+          "last_name",
+          "patient_doctor_id",
+          "user_type_id",
+          "identification_number"
+        ],
+        "title": "PatientDto"
+      },
+      "PatientUpdate": {
+        "properties": {
+          "user_account_id": {
+            "type": "integer",
+            "title": "User Account Id"
+          },
+          "first_name": {
+            "type": "string",
+            "title": "First Name"
+          },
+          "last_name": {
+            "type": "string",
+            "title": "Last Name"
+          },
           "email": {
             "type": "string",
             "title": "Email"
           },
-          "password": {
+          "identification_number": {
             "type": "string",
-            "title": "Password"
+            "title": "Identification Number"
           }
         },
         "type": "object",
         "required": [
+          "user_account_id",
+          "first_name",
+          "last_name",
           "email",
-          "password"
+          "identification_number"
         ],
-        "title": "UserCreate"
+        "title": "PatientUpdate"
+      },
+      "PatientUpsertResponseDto": {
+        "properties": {
+          "user_account_id": {
+            "type": "integer",
+            "title": "User Account Id"
+          },
+          "first_name": {
+            "type": "string",
+            "title": "First Name"
+          },
+          "last_name": {
+            "type": "string",
+            "title": "Last Name"
+          },
+          "patient_doctor_id": {
+            "type": "integer",
+            "title": "Patient Doctor Id"
+          },
+          "user_type_id": {
+            "type": "integer",
+            "title": "User Type Id"
+          },
+          "identification_number": {
+            "type": "string",
+            "title": "Identification Number"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_account_id",
+          "first_name",
+          "last_name",
+          "patient_doctor_id",
+          "user_type_id",
+          "identification_number"
+        ],
+        "title": "PatientUpsertResponseDto"
       },
       "ValidationError": {
         "properties": {

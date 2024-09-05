@@ -4,28 +4,39 @@ export type HTTPValidationError = {
     detail?: Array<ValidationError>;
 };
 
-export type Item = {
-    title: string;
-    description?: (string | null);
-    id: number;
-    owner_id: number;
-};
-
-export type ItemCreate = {
-    title: string;
-    description?: (string | null);
-};
-
-export type User = {
+export type PatientCreate = {
+    patient_doctor_id: number;
+    first_name: string;
+    last_name: string;
     email: string;
-    id: number;
-    is_active: boolean;
-    items?: Array<Item>;
+    identification_number: string;
+    birthday: string;
 };
 
-export type UserCreate = {
+export type PatientDto = {
+    user_account_id: number;
+    first_name: string;
+    last_name: string;
+    patient_doctor_id: number;
+    user_type_id: number;
+    identification_number: string;
+};
+
+export type PatientUpdate = {
+    user_account_id: number;
+    first_name: string;
+    last_name: string;
     email: string;
-    password: string;
+    identification_number: string;
+};
+
+export type PatientUpsertResponseDto = {
+    user_account_id: number;
+    first_name: string;
+    last_name: string;
+    patient_doctor_id: number;
+    user_type_id: number;
+    identification_number: string;
 };
 
 export type ValidationError = {
@@ -34,64 +45,35 @@ export type ValidationError = {
     type: string;
 };
 
-export type CreateUserData = {
-    body: UserCreate;
-};
-
-export type CreateUserResponse = (User);
-
-export type CreateUserError = (unknown | HTTPValidationError);
-
-export type ReadUsersData = {
+export type ListData = {
     query?: {
         limit?: number;
         skip?: number;
     };
 };
 
-export type ReadUsersResponse = (Array<User>);
+export type ListResponse = (PatientDto);
 
-export type ReadUsersError = (unknown | HTTPValidationError);
+export type ListError = (unknown | HTTPValidationError);
 
-export type ReadUserData = {
+export type CreateData = {
+    body: PatientCreate;
+};
+
+export type CreateResponse = (PatientUpsertResponseDto);
+
+export type CreateError = (unknown | HTTPValidationError);
+
+export type UpdateData = {
+    body: PatientUpdate;
     path: {
-        user_id: number;
+        patient_id: number;
     };
 };
 
-export type ReadUserResponse = (User);
+export type UpdateResponse = (PatientUpsertResponseDto);
 
-export type ReadUserError = (unknown | HTTPValidationError);
-
-export type CreateItemForUserData = {
-    body: ItemCreate;
-    path: {
-        user_id: number;
-    };
-};
-
-export type CreateItemForUserResponse = (Item);
-
-export type CreateItemForUserError = (unknown | HTTPValidationError);
-
-export type ReadItemsData = {
-    query?: {
-        limit?: number;
-        skip?: number;
-    };
-};
-
-export type ReadItemsResponse = (Array<Item>);
-
-export type ReadItemsError = (unknown | HTTPValidationError);
-
-export type CreateItemData = {
-    body: ItemCreate;
-};
-
-export type CreateItemResponse = (ItemCreate);
-
-export type CreateItemError = (unknown | HTTPValidationError);
+export type UpdateError = (unknown | HTTPValidationError);
 
 export type RootResponse = (unknown);
 

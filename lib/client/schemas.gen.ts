@@ -14,102 +14,129 @@ export const $HTTPValidationError = {
     title: 'HTTPValidationError'
 } as const;
 
-export const $Item = {
+export const $PatientCreate = {
     properties: {
-        title: {
-            type: 'string',
-            title: 'Title'
-        },
-        description: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Description'
-        },
-        id: {
+        patient_doctor_id: {
             type: 'integer',
-            title: 'Id'
+            title: 'Patient Doctor Id'
         },
-        owner_id: {
-            type: 'integer',
-            title: 'Owner Id'
-        }
-    },
-    type: 'object',
-    required: ['title', 'id', 'owner_id'],
-    title: 'Item'
-} as const;
-
-export const $ItemCreate = {
-    properties: {
-        title: {
+        first_name: {
             type: 'string',
-            title: 'Title'
+            title: 'First Name'
         },
-        description: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Description'
-        }
-    },
-    type: 'object',
-    required: ['title'],
-    title: 'ItemCreate'
-} as const;
-
-export const $User = {
-    properties: {
+        last_name: {
+            type: 'string',
+            title: 'Last Name'
+        },
         email: {
             type: 'string',
             title: 'Email'
         },
-        id: {
-            type: 'integer',
-            title: 'Id'
+        identification_number: {
+            type: 'string',
+            title: 'Identification Number'
         },
-        is_active: {
-            type: 'boolean',
-            title: 'Is Active'
-        },
-        items: {
-            items: {
-                '$ref': '#/components/schemas/Item'
-            },
-            type: 'array',
-            title: 'Items',
-            default: []
+        birthday: {
+            type: 'string',
+            format: 'date',
+            title: 'Birthday'
         }
     },
     type: 'object',
-    required: ['email', 'id', 'is_active'],
-    title: 'User'
+    required: ['patient_doctor_id', 'first_name', 'last_name', 'email', 'identification_number', 'birthday'],
+    title: 'PatientCreate'
 } as const;
 
-export const $UserCreate = {
+export const $PatientDto = {
     properties: {
+        user_account_id: {
+            type: 'integer',
+            title: 'User Account Id'
+        },
+        first_name: {
+            type: 'string',
+            title: 'First Name'
+        },
+        last_name: {
+            type: 'string',
+            title: 'Last Name'
+        },
+        patient_doctor_id: {
+            type: 'integer',
+            title: 'Patient Doctor Id'
+        },
+        user_type_id: {
+            type: 'integer',
+            title: 'User Type Id'
+        },
+        identification_number: {
+            type: 'string',
+            title: 'Identification Number'
+        }
+    },
+    type: 'object',
+    required: ['user_account_id', 'first_name', 'last_name', 'patient_doctor_id', 'user_type_id', 'identification_number'],
+    title: 'PatientDto'
+} as const;
+
+export const $PatientUpdate = {
+    properties: {
+        user_account_id: {
+            type: 'integer',
+            title: 'User Account Id'
+        },
+        first_name: {
+            type: 'string',
+            title: 'First Name'
+        },
+        last_name: {
+            type: 'string',
+            title: 'Last Name'
+        },
         email: {
             type: 'string',
             title: 'Email'
         },
-        password: {
+        identification_number: {
             type: 'string',
-            title: 'Password'
+            title: 'Identification Number'
         }
     },
     type: 'object',
-    required: ['email', 'password'],
-    title: 'UserCreate'
+    required: ['user_account_id', 'first_name', 'last_name', 'email', 'identification_number'],
+    title: 'PatientUpdate'
+} as const;
+
+export const $PatientUpsertResponseDto = {
+    properties: {
+        user_account_id: {
+            type: 'integer',
+            title: 'User Account Id'
+        },
+        first_name: {
+            type: 'string',
+            title: 'First Name'
+        },
+        last_name: {
+            type: 'string',
+            title: 'Last Name'
+        },
+        patient_doctor_id: {
+            type: 'integer',
+            title: 'Patient Doctor Id'
+        },
+        user_type_id: {
+            type: 'integer',
+            title: 'User Type Id'
+        },
+        identification_number: {
+            type: 'string',
+            title: 'Identification Number'
+        }
+    },
+    type: 'object',
+    required: ['user_account_id', 'first_name', 'last_name', 'patient_doctor_id', 'user_type_id', 'identification_number'],
+    title: 'PatientUpsertResponseDto'
 } as const;
 
 export const $ValidationError = {
