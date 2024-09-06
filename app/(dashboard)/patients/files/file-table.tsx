@@ -25,7 +25,7 @@ import {
   CardTitle
 } from '@/components/ui/card';
 // import { SelectProduct } from '@/lib/db';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PatientDTO, PatientFileDTO } from "@/lib/models";
@@ -35,45 +35,40 @@ import FileForm from "./file-form";
 
 
 
-export function FileTable({
-  patient,
-  items,
-  offset,
-  total
-}: {
-  patient: PatientDTO,
-  items: PatientFileDTO[];
-  offset: number;
-  total: number;
-}) {
+export function FileTable()  {
   let router = useRouter();
-  let itemPerPage = 5;
+  // const { patient_id } = router.query;
+  // let items:any[] = []
+  // let offset = 0;
+  // let total = 0;
 
-  const [editingFile, setEditingFile] = useState<PatientFileDTO | null>(null)
-  const [deletingFile, setDeletingFile] = useState<PatientFileDTO | null>(null)
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  // let itemPerPage = 5;
+
+  // const [editingFile, setEditingFile] = useState<PatientFileDTO | null>(null)
+  // const [deletingFile, setDeletingFile] = useState<PatientFileDTO | null>(null)
+  // const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  // const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
 
-  function prevPage() {
-    router.back();
-  }
+  // function prevPage() {
+  //   // router.back();
+  // }
 
-  function nextPage() {
-    router.push(`/?offset=${offset}`, { scroll: false });
-  }
+  // function nextPage() {
+  //   // router.push(`/?offset=${offset}`, { scroll: false });
+  // }
 
-  function addPatient(){
+  // function addPatient(){
 
-  }
+  // }
 
   return (
     <div>
-    <Card>
+      <h1>test</h1>
+    {/* <Card>
       <CardHeader>
         <CardTitle>Imagenes</CardTitle>
         <CardDescription>
-          Maneja las imagenes para el paciente [{patient.first_name} {patient.last_name}].
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -145,7 +140,7 @@ export function FileTable({
             <Button onClick={addPatient}>Guardar</Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
 
     </div>
   );

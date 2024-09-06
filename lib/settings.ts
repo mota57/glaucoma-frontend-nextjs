@@ -1,2 +1,2 @@
 
-export const API_URL='https://nmsqdvc5-8000.use.devtunnels.ms'
+export const API_URL='http://localhost:8000'

@@ -29,26 +29,49 @@ import { Product } from '../product';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { PatientFormDTO } from "@/lib/models";
-import { useState } from "react";
+import { PatientDTO, PatientFormDTO } from "@/lib/models";
+import { useEffect, useState } from "react";
 import PatientForm from "./patient-form";
+import axios from "axios";
+import { API_URL } from "@/lib/settings";
+import { AppStorage } from "@/lib/app.storage";
 
-export function PatientTable({
-  items,
-  offset,
-  total
-}: {
-  items: any[];
-  offset: number;
-  total: number;
-}) {
+export function PatientTable() {
+  let offset = 0
+  let total = 100;
+
+  let user = AppStorage.getUserData();
   let router = useRouter();
   let itemPerPage = 5;
 
-  const [editingPatient, setEditingPatient] = useState<PatientFormDTO | null>(null)
+  const [editingPatient, setEditingPatient] = useState<any>(null)
   const [deletingPatient, setDeletingPatient] = useState<PatientFormDTO | null>(null)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+
+  const [items, setItems] = useState<PatientDTO[]>([]);  // State to hold the table data
+  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [isError, setError] = useState<String>(''); // Error state
+
+  useEffect(() => {
+    // Fetch data when component mounts
+    (async () => {
+      await fetchPatient();
+    })();
+
+  }, []);  // Empty dependency array ensures this runs only once when the component mounts
+
+  async function fetchPatient() {
+      try {
+        const response = await axios.get(API_URL + '/patient/list/' + user.id);
+        setItems(response.data);  // Store fetched data
+      } catch (err) {
+        setError('Failed to load data');  // Handle error
+      } finally {
+        setIsLoading(false);  // Set loading to false after data fetch or error
+      }
+
+  }
 
 
   function prevPage() {
@@ -59,114 +82,122 @@ export function PatientTable({
     router.push(`/?offset=${offset}`, { scroll: false });
   }
 
-  function addPatient(){
+  function goToFiles(patient_id:any) {
+    router.push('/patients/files/'+patient_id);
+  }
 
+  function onCreateSuccess() {
+    setIsAddModalOpen(false);
+    fetchPatient();
+  }
+
+  function onEditSuccess() {
+    setIsEditModalOpen(false);
+    fetchPatient();
   }
 
   return (
     <div>
-    <Card>
-      <CardHeader>
-        <CardTitle>Pacientes</CardTitle>
-        <CardDescription>
-          Maneja tus pacientes en este form.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Button onClick={() => setIsAddModalOpen(true)}>Agregar paciente</Button>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nombre</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Cedula</TableHead>
-              <TableHead className="hidden md:table-cell">Fecha de nacimiento</TableHead>
-              <TableHead className="hidden md:table-cell">Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {items.map((record) => (
-              <TableRow>
-                <TableCell className="font-medium">{record.first_name} {record.last_name}</TableCell>
-                <TableCell className="font-medium">{record.email}</TableCell>
-                <TableCell className="hidden md:table-cell">{record.identification_number}</TableCell>
-                <TableCell className="hidden md:table-cell">
-                  {record.birthday.toLocaleDateString("en-US")}
-                </TableCell>
-                <TableCell>
-                        <form action={() => {setEditingPatient(record); setIsEditModalOpen(true)}}>
-                          <button type="submit">Editar</button>
-                        </form>
+      <Card>
+        <CardHeader>
+          <CardTitle>Pacientes</CardTitle>
+          <CardDescription>
+            Maneja tus pacientes en este form.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={() => setIsAddModalOpen(true)}>Agregar paciente</Button>
 
-                        <form action={() => console.log('eliminar')}>
-                          <button type="submit">Eliminar</button>
-                        </form>
+          {
+            isLoading ? (<p> is Loading </p>) :
+              isError ? (<p> An error occured when loading the data</p>) :
 
-                        <form action={() => {setEditingPatient(record); setIsEditModalOpen(true)}}>
-                          <button type="submit" ><a>Imagenes</a></button>
-                        </form>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-      <CardFooter>
-        <form className="flex items-center w-full justify-between">
-          <div className="text-xs text-muted-foreground">
-            Showing{' '}
-            <strong>
-              {Math.min(offset - itemPerPage, total) + 1}-{offset}
-            </strong>{' '}
-            of <strong>{total}</strong> products
-          </div>
-          <div className="flex">
-            <Button
-              formAction={prevPage}
-              variant="ghost"
-              size="sm"
-              type="submit"
-              disabled={offset === itemPerPage}
-            >
-              <ChevronLeft className="mr-2 h-4 w-4" />
-              Prev
-            </Button>
-            <Button
-              formAction={nextPage}
-              variant="ghost"
-              size="sm"
-              type="submit"
-              disabled={offset + itemPerPage > total}
-            >
-              Next
-              <ChevronRight className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
-        </form>
-      </CardFooter>
-    </Card>
-    <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+                (<Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Nombre</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Cedula</TableHead>
+                      <TableHead className="hidden md:table-cell">Fecha de nacimiento</TableHead>
+                      <TableHead className="hidden md:table-cell">Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {items.map((record, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="font-medium">{record.first_name} {record.last_name}</TableCell>
+                        <TableCell className="font-medium">{record.email}</TableCell>
+                        <TableCell className="hidden md:table-cell">{record.identification_number}</TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          {record.birthday.toString()}
+                        </TableCell>
+                        <TableCell>
+                          <Button onClick={() => { setEditingPatient(record); setIsEditModalOpen(true) }}>Editar</Button>
+                          <Button onClick={() => { window.alert('todo') }}>Eliminar</Button>
+                          <Button onClick={() => { goToFiles(record.user_account_id) }}>Imagenes</Button>
+
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>)
+
+          }
+        </CardContent>
+        <CardFooter>
+          <form className="flex items-center w-full justify-between">
+            <div className="text-xs text-muted-foreground">
+              Showing{' '}
+              <strong>
+                {Math.min(offset - itemPerPage, total) + 1}-{offset}
+              </strong>{' '}
+              of <strong>{total}</strong> products
+            </div>
+            <div className="flex">
+              <Button
+                formAction={prevPage}
+                variant="ghost"
+                size="sm"
+                type="submit"
+                disabled={offset === itemPerPage}
+              >
+                <ChevronLeft className="mr-2 h-4 w-4" />
+                Prev
+              </Button>
+              <Button
+                formAction={nextPage}
+                variant="ghost"
+                size="sm"
+                type="submit"
+                disabled={offset + itemPerPage > total}
+              >
+                Next
+                <ChevronRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          </form>
+        </CardFooter>
+      </Card>
+
+      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Agregar paciente</DialogTitle>
           </DialogHeader>
-          {/* <PatientForm patient={newPatient} setPatient={setNewPatient} /> */}
-          <PatientForm record={null} />
+          <PatientForm record={null} onSuccess={onCreateSuccess} patient_id={0} />
           <DialogFooter>
-            <Button onClick={addPatient}>Guardar</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-    <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Editar paciente</DialogTitle>
           </DialogHeader>
-          {/* <PatientForm patient={newPatient} setPatient={setNewPatient} /> */}
-          <PatientForm record={editingPatient} />
+          <PatientForm record={editingPatient} onSuccess={onEditSuccess} patient_id={editingPatient?.user_account_id || 0} />
           <DialogFooter>
-            <Button onClick={addPatient}>Guardar</Button>
+            {/* <Button onClick={addPatient}>Guardar</Button> */}
           </DialogFooter>
         </DialogContent>
       </Dialog>

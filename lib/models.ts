@@ -5,6 +5,7 @@ export interface UserData {
 }
 
 export interface PatientFormDTO {
+  user_account_id:number
   first_name: string
   last_name: string
   email: string
@@ -28,7 +29,7 @@ export interface PatientDTO {
   last_name: string
   email: string
   identification_number: string
-  birthday: Date
+  birthday: string
 }
 
 export interface SelectProduct {
@@ -68,101 +69,101 @@ export async function deleteProductById(id: number) { }
 
 
 
-export function GetPatientsMock(): PatientDTO[] {
-  return [
-    {
-      user_account_id: 1,
-      first_name: "John",
-      last_name: "Doe",
-      email: "john.doe@example.com",
-      identification_number: "A1234567",
-      birthday: new Date('1990-05-15')
-    },
-    {
-      user_account_id: 2,
-      first_name: "Jane",
-      last_name: "Smith",
-      email: "jane.smith@example.com",
-      identification_number: "B9876543",
-      birthday: new Date('1985-07-22')
-    },
-    {
-      user_account_id: 3,
-      first_name: "Michael",
-      last_name: "Johnson",
-      email: "michael.johnson@example.com",
-      identification_number: "C7654321",
-      birthday: new Date('1978-09-30')
-    },
-    {
-      user_account_id: 4,
-      first_name: "Emily",
-      last_name: "Davis",
-      email: "emily.davis@example.com",
-      identification_number: "D4567890",
-      birthday: new Date('1992-03-14')
-    },
-    {
-      user_account_id: 5,
-      first_name: "David",
-      last_name: "Miller",
-      email: "david.miller@example.com",
-      identification_number: "E2345678",
-      birthday: new Date('1988-11-04')
-    }
-  ]
-};
+// export function GetPatientsMock(): PatientDTO[] {
+//   return [
+//     {
+//       user_account_id: 1,
+//       first_name: "John",
+//       last_name: "Doe",
+//       email: "john.doe@example.com",
+//       identification_number: "A1234567",
+//       birthday: new Date('1990-05-15')
+//     },
+//     {
+//       user_account_id: 2,
+//       first_name: "Jane",
+//       last_name: "Smith",
+//       email: "jane.smith@example.com",
+//       identification_number: "B9876543",
+//       birthday: new Date('1985-07-22')
+//     },
+//     {
+//       user_account_id: 3,
+//       first_name: "Michael",
+//       last_name: "Johnson",
+//       email: "michael.johnson@example.com",
+//       identification_number: "C7654321",
+//       birthday: new Date('1978-09-30')
+//     },
+//     {
+//       user_account_id: 4,
+//       first_name: "Emily",
+//       last_name: "Davis",
+//       email: "emily.davis@example.com",
+//       identification_number: "D4567890",
+//       birthday: new Date('1992-03-14')
+//     },
+//     {
+//       user_account_id: 5,
+//       first_name: "David",
+//       last_name: "Miller",
+//       email: "david.miller@example.com",
+//       identification_number: "E2345678",
+//       birthday: new Date('1988-11-04')
+//     }
+//   ]
+// };
 
 
-export function GetPatientFileMock(): PatientFileDTO[] {
-  return [
-    {
-      patient_file_id: 1,
-      path: '/images/test.png',
-      file_status_name: 'processing',
-      file_status_id: 1,
-      user_account_id: 1,
-      message: 'test message',
-      prediction_value: 0.85
-    },
-    {
-      patient_file_id: 2,
-      path: '/images/test.png',
-      file_status_name: 'completed',
-      file_status_id: 2,
-      user_account_id: 2,
-      message: 'test message',
-      prediction_value: 0.90
-    },
-    {
-      patient_file_id: 3,
-      path: '/images/test.png',
-      file_status_name: 'error',
-      file_status_id: 3,
-      user_account_id: 3,
-      message: 'test message',
-      prediction_value: 0.65
-    },
-    {
-      patient_file_id: 4,
-      path: '/images/test.png',
-      file_status_name: 'completed',
-      file_status_id: 2,
-      user_account_id: 4,
-      message: 'test message',
-      prediction_value: 0.92
-    },
-    {
-      patient_file_id: 5,
-      path: '/images/test.png',
-      file_status_name: 'processing',
-      file_status_id: 1,
-      user_account_id: 5,
-      message: 'test message',
-      prediction_value: 0.78
-    }
-  ]
-};
+// export function GetPatientFileMock(): PatientFileDTO[] {
+//   return [
+//     {
+//       patient_file_id: 1,
+//       path: '/images/test.png',
+//       file_status_name: 'processing',
+//       file_status_id: 1,
+//       user_account_id: 1,
+//       message: 'test message',
+//       prediction_value: 0.85
+//     },
+//     {
+//       patient_file_id: 2,
+//       path: '/images/test.png',
+//       file_status_name: 'completed',
+//       file_status_id: 2,
+//       user_account_id: 2,
+//       message: 'test message',
+//       prediction_value: 0.90
+//     },
+//     {
+//       patient_file_id: 3,
+//       path: '/images/test.png',
+//       file_status_name: 'error',
+//       file_status_id: 3,
+//       user_account_id: 3,
+//       message: 'test message',
+//       prediction_value: 0.65
+//     },
+//     {
+//       patient_file_id: 4,
+//       path: '/images/test.png',
+//       file_status_name: 'completed',
+//       file_status_id: 2,
+//       user_account_id: 4,
+//       message: 'test message',
+//       prediction_value: 0.92
+//     },
+//     {
+//       patient_file_id: 5,
+//       path: '/images/test.png',
+//       file_status_name: 'processing',
+//       file_status_id: 1,
+//       user_account_id: 5,
+//       message: 'test message',
+//       prediction_value: 0.78
+//     }
+//   ]
+// };
 
 
 

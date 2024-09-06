@@ -20,11 +20,8 @@ import { PatientFormDTO } from "@/lib/models"
 import { AppStorage } from "@/lib/app.storage"
 
 import { API_URL } from "@/lib/settings"
-import { client, PatientsService, CreateData } from "@/lib/client"
-
-client.setConfig({
-  baseUrl: API_URL
-})
+import { useToast } from "@/components/ui/hooks/use-toast"
+import axios from "axios"
 
 
 const formSchema = z.object({
@@ -47,9 +44,10 @@ const formSchema = z.object({
 
 const dateNow = new Date(Date.now()).toISOString().slice(0, 10);
 
-export default function PatientForm({ record }: { record: PatientFormDTO | null | undefined }) {
+export default function PatientForm({ record, onSuccess, patient_id }: { record: PatientFormDTO | null | undefined, onSuccess: () => void, patient_id: number }) {
+  const { toast } = useToast()
 
-  let [loading, setLoading] = useState<boolean>(false)
+  let [isLoading, setLoading] = useState<boolean>(false)
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -64,144 +62,147 @@ export default function PatientForm({ record }: { record: PatientFormDTO | null 
   })
 
 
-async function onSubmit(values: z.infer<typeof formSchema>) {
-  // Activate loader (show loader in UI)
-  setLoading(true); // setLoading controls the state of a loader/spinner
-  console.log(values);
-  console.log('Loading...');
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    // Activate loader (show loader in UI)
+    console.log(values);
+    setLoading(true); // setLoading controls the state of a loader/spinner
 
-  try {
-    let userData = AppStorage.getUserData();
+    try {
 
-    let response = await PatientsService.create({
-      client: client,
-      body: {
-        ...values,
-        patient_doctor_id: userData.id,
-        birthday: values.birthday.toString(),
-      },
-    });
-    console.log(response);
+      let userData = AppStorage.getUserData();
 
-    // Stop loading (hide loader in UI)
-    setLoading(false);
 
-    // Show success notification
-    toast({
-      title: "Patient created",
-      description: "The patient was successfully created.",
-      status: "success",
-      duration: 3000,
-    });
+      let response = patient_id == 0 ?
+        await axios.post(API_URL + '/patient/create', {
+          ...values,
+          patient_doctor_id: userData.id,
+          birthday: values.birthday.toString(),
+        }) :
+        await axios.put(API_URL + '/patient/update/' + patient_id, {
+          ...values,
+          user_account_id: patient_id
+        });
+      console.log(response);
 
-  } catch (error) {
-    // Stop loading (hide loader in UI)
-    setLoading(false);
+      // Stop loading (hide loader in UI)
+      setLoading(false);
 
-    // Inform user about the error
-    toast({
-      title: "Error",
-      description: "There was an error creating the patient. Please try again.",
-      status: "error",
-      duration: 3000,
-    });
+      // Show success notification
+      toast({
+        title: "Patient created",
+        description: "The patient was successfully created.",
+        duration: 3000,
+      });
+      onSuccess()
+    } catch (error) {
+      // Stop loading (hide loader in UI)
+      setLoading(false);
 
-    console.error(error); // Log the error for debugging purposes
+      // Inform user about the error
+      toast({
+        title: "Error",
+        description: "There was an error creating the patient. Please try again.",
+        duration: 3000,
+      });
+
+      console.error(error); // Log the error for debugging purposes
+    }
   }
-}
-
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" aria-disabled={loading}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" aria-disabled={isLoading}>
         <fieldset>
 
-        <FormField
-          control={form.control}
-          name="first_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nombre</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormDescription>
-                {/* This is your public display name. */}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="first_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nombre</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormDescription>
+                  {/* This is your public display name. */}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="last_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Apellido</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormDescription>
-                {/* This is your public display name. */}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="last_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Apellido</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormDescription>
+                  {/* This is your public display name. */}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormDescription>
-                {/* This is your public display name. */}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormDescription>
+                  {/* This is your public display name. */}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="identification_number"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Cedula</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormDescription>
-                {/* This is your public display name. */}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="identification_number"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Cedula</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormDescription>
+                  {/* This is your public display name. */}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="birthday"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Birthday</FormLabel>
-              <FormControl>
-                <Input type="date" {...field} />
-              </FormControl>
-              <FormDescription>
-                {/* This is your public display name. */}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="birthday"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Fecha de nacimiento</FormLabel>
+                <FormControl>
+                  <Input type="date" {...field} />
+                </FormControl>
+                <FormDescription>
+                  {/* This is your public display name. */}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </fieldset>
-        <Button type="submit">Submit</Button>
+        <span className="spinner" />
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? "Loading" : "Submit"}
+        </Button>
 
       </form>
     </Form>

@@ -20,7 +20,7 @@ export class AppStorage {
   }
 
   static get<T>(key: string, defaultValue: T): T {
-    const dataString = sessionStorage.getItem(key);
+    const dataString = window.sessionStorage.getItem(key);
     if (!dataString) return defaultValue;
     try {
       return JSON.parse(dataString) as T;
@@ -31,6 +31,6 @@ export class AppStorage {
   }
 
   static save<T>(key: string, data: T): void {
-    sessionStorage.setItem(key, JSON.stringify(data));
+    window.sessionStorage.setItem(key, JSON.stringify(data));
   }
 }
