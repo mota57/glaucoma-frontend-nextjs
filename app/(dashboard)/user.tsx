@@ -11,9 +11,24 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
 
+import {apiSecure} from '@/lib/utils'
+import { AppStorage } from '@/lib/app.storage';
+
 export async function User() {
   let session = await auth();
   let user = session?.user;
+
+  async function signOut() {
+    try {
+      AppStorage.logOutUser();
+      // const response = await apiSecure.post('/user/logout');
+    } catch (err) {
+    } finally {
+      window.location.href = '/login'
+    }
+}
+
+
 
   return (
     <DropdownMenu>
@@ -40,14 +55,15 @@ export async function User() {
         <DropdownMenuSeparator />
         {user ? (
           <DropdownMenuItem>
-            <form
-              action={async () => {
+            {/* <form
+              action={ () => {
                 'use server';
                 await signOut();
               }}
             >
               <button type="submit">Sign Out</button>
-            </form>
+            </form> */}
+              <button onClick={signOut}>Sign Out</button>
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem>

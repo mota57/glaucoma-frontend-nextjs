@@ -13,14 +13,36 @@ import { UserData } from '@/lib/models'
 
 export class AppStorage {
   static getUserData():UserData {
-    return AppStorage.get<UserData>('UserData', {
-      id: 1,
-      email: 'motamendez@gmail.com',
-    });
+    let data = AppStorage.get<UserData | null>('UserData', null);
+    if (data == null) {
+      throw "Error user not found";
+    }
+    return data
+  }
+
+  static isUserLog() {
+    return false;
+  }
+
+  static setUserData(data:UserData) {
+    AppStorage.save('UserData',data);
+
+  }
+
+  static logOutUser(){
+    AppStorage.clearKey('bearearToken');
+    AppStorage.clearKey('UserData');
+  }
+
+  static getBearerToken() {
+    return window.localStorage.getItem('bearearToken');
+  }
+  static setBearerToken(data:string) {
+    return window.localStorage.save('bearearToken', data);
   }
 
   static get<T>(key: string, defaultValue: T): T {
-    const dataString = window.sessionStorage.getItem(key);
+    const dataString = window.localStorage.getItem(key);
     if (!dataString) return defaultValue;
     try {
       return JSON.parse(dataString) as T;
@@ -31,6 +53,10 @@ export class AppStorage {
   }
 
   static save<T>(key: string, data: T): void {
-    window.sessionStorage.setItem(key, JSON.stringify(data));
+    window.localStorage.setItem(key, JSON.stringify(data));
+  }
+
+  static clearKey(key: string): void {
+    window.localStorage.setItem(key, '');
   }
 }

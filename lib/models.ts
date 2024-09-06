@@ -1,7 +1,11 @@
-import 'server-only';
 export interface UserData {
   id:number
   email:string
+}
+
+export interface Requestdetails{
+  email:string
+  password:string
 }
 
 export interface PatientFormDTO {
