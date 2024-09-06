@@ -14,7 +14,8 @@ export const apiSecure = axios.create({
 });
 
 export const api = axios.create({
-  baseURL: API_URL
+  baseURL: API_URL,
+  withCredentials: false,
 });
 
 apiSecure.interceptors.request.use(

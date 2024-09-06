@@ -31,8 +31,8 @@ import { Button } from '@/components/ui/button';
 import { PatientDTO, PatientFileDTO } from "@/lib/models";
 import { useEffect, useState } from "react";
 import FileForm from "./file-form";
-import axios from "axios";
-import { API_URL, GLAUCOMA_API_S3_DOMAIN } from "@/lib/settings";
+import { GLAUCOMA_API_S3_DOMAIN } from "@/lib/settings";
+import { apiSecure } from "@/lib/utils";
 
 export function FileTable() {
   const searchParams = useSearchParams()
@@ -60,7 +60,7 @@ export function FileTable() {
 
   async function fetchData() {
     try {
-      const response = await axios.get(API_URL + '/patient/list_patient_files/?patient_id=' + patient_id);
+      const response = await apiSecure.get('/patient/list_patient_files/?patient_id=' + patient_id);
       setItems(response.data);  // Store fetched data
     } catch (err) {
       // setError('Failed to load data');  // Handle error

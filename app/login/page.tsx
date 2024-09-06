@@ -18,6 +18,8 @@ import {Requestdetails} from '@/lib/models'
 
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import axios from 'axios';
+import { API_URL } from '@/lib/settings';
 
 async function onSignIn() {
   // let data:Requestdetails = {
@@ -33,18 +35,19 @@ export default function LoginPage() {
 
   const handleSubmit = async (event:any) => {
     event.preventDefault();
-
-    const res = await api.post('/users/login', {
-      username:email,
+    const res = await axios.post(API_URL + '/users/login', {
+      email:email,
       password:password
-    });
+    }
+  );
 
     AppStorage.setBearerToken(res.data.access_token)
     AppStorage.setUserData({
       email: email,
       id: res.data.user_id
     })
-    window.location.href = '/'
+
+    window.location.href = '/patients'
 
   };
 

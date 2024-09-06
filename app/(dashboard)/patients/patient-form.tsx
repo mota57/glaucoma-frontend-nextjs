@@ -22,6 +22,7 @@ import { AppStorage } from "@/lib/app.storage"
 import { API_URL } from "@/lib/settings"
 import { useToast } from "@/components/ui/hooks/use-toast"
 import axios from "axios"
+import { apiSecure } from "@/lib/utils"
 
 
 const formSchema = z.object({
@@ -73,12 +74,12 @@ export default function PatientForm({ record, onSuccess, patient_id }: { record:
 
 
       let response = patient_id == 0 ?
-        await axios.post(API_URL + '/patient/create', {
+        await apiSecure.post('/patient/create', {
           ...values,
           patient_doctor_id: userData.id,
           birthday: values.birthday.toString(),
         }) :
-        await axios.put(API_URL + '/patient/update/' + patient_id, {
+        await apiSecure.put('/patient/update/' + patient_id, {
           ...values,
           user_account_id: patient_id
         });

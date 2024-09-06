@@ -29,16 +29,12 @@ export class AppStorage {
 
   }
 
-  static logOutUser(){
-    AppStorage.clearKey('bearearToken');
-    AppStorage.clearKey('UserData');
-  }
 
   static getBearerToken() {
     return window.localStorage.getItem('bearearToken');
   }
   static setBearerToken(data:string) {
-    return window.localStorage.save('bearearToken', data);
+    return window.localStorage.setItem('bearearToken', data);
   }
 
   static get<T>(key: string, defaultValue: T): T {

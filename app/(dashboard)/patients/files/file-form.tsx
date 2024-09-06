@@ -16,8 +16,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { API_URL } from "@/lib/settings"
 import { useToast } from "@/components/ui/hooks/use-toast"
-import axios from "axios"
 import { useState } from "react"
+import { apiSecure } from "@/lib/utils"
 
 
 const formSchema = z.object({
@@ -51,7 +51,7 @@ export default function FileForm({ patient_id, onSuccess }: { patient_id: number
       const base64String = (reader.result as string).split(',')[1]; // Get the base64 string without the metadata
 
       try {
-        const response = await axios.post(API_URL + '/patient/create_patient_file', {
+        const response = await apiSecure.post('/patient/create_patient_file', {
           user_account_id:patient_id,
           file: base64String,
           fileName: (file as any).name,

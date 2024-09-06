@@ -35,6 +35,7 @@ import PatientForm from "./patient-form";
 import axios from "axios";
 import { API_URL } from "@/lib/settings";
 import { AppStorage } from "@/lib/app.storage";
+import { apiSecure } from "@/lib/utils";
 
 export function PatientTable() {
   let offset = 0
@@ -63,7 +64,7 @@ export function PatientTable() {
 
   async function fetchPatient() {
       try {
-        const response = await axios.get(API_URL + '/patient/list/' + user.id);
+        const response = await apiSecure.get('/patient/list/' + user.id);
         setItems(response.data);  // Store fetched data
       } catch (err) {
         setError('Failed to load data');  // Handle error
