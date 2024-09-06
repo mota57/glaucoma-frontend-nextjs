@@ -14,60 +14,83 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { PatientFormDTO as PatientFormDTO } from "@/lib/models"
-// import { UsersService, client } from "@/lib/client"
-
-// client.setConfig({
-//   baseUrl: process.env.API_URL
-// })
+import { API_URL } from "@/lib/settings"
+import { useToast } from "@/components/ui/hooks/use-toast"
+import axios from "axios"
+import { useState } from "react"
+// import { AppStorage } from "@/lib/app.storage"
 
 
 const formSchema = z.object({
   path: z.string()
 })
 
-const dateNow = new Date(Date.now()).toISOString().slice(0,10);
 
-export default function FileForm() {
+export default function FileForm({ patient_id, onSuccess }: { patient_id: number, onSuccess: () => void }) {
+  const { toast } = useToast()
 
-  // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      path:  "",
+  const [isLoading, setLoading] = useState<boolean>(false)
+  const [file, setFile] = useState(null);
+
+
+  const handleFileChange = (event: any) => {
+    setFile(event.target.files[0]);
+  };
+
+
+  async function handleUploadClick() {
+    // Activate loader (show loader in UI)
+    setLoading(true); // setLoading controls the state of a loader/spinner
+
+    try {
+
+      if (!file) {
+        return;
+      }
+
+      // Example of uploading the file using the Fetch API
+      const formData = new FormData();
+
+      formData.append('file', file);
+      formData.append('patient_id', patient_id.toString())
+
+      // let userData = AppStorage.getUserData();
+      let response = await axios.post(API_URL + '/patient/create', formData);
+
+      console.log(response);
+
+      // Stop loading (hide loader in UI)
+      setLoading(false);
+
+      // Show success notification
+      toast({
+        title: "created",
+        description: "The file successfully created.",
+        duration: 3000,
+      });
+      onSuccess()
+    } catch (error) {
+      // Stop loading (hide loader in UI)
+      setLoading(false);
+
+      // Inform user about the error
+      toast({
+        title: "Error",
+        description: "There was an error creating the file. Please try again.",
+        duration: 3000,
+      });
+
+      console.error(error); // Log the error for debugging purposes
     }
-  })
-
-  // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-
-
-
-    console.log(values)
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="path"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input type="file" {...field} />
-              </FormControl>
-              <FormDescription>
-                {/* This is your public display name. */}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <div>
+      <input type="file" onChange={handleFileChange} />
+      {file && <div>{(file as any).name}</div>}
+      
+      <Button onClick={handleUploadClick}>Upload</Button>
+    </div>
 
-      </form>
-    </Form>
   )
 }
