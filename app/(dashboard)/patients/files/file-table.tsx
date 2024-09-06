@@ -31,6 +31,8 @@ import { Button } from '@/components/ui/button';
 import { PatientDTO, PatientFileDTO } from "@/lib/models";
 import { useEffect, useState } from "react";
 import FileForm from "./file-form";
+import axios from "axios";
+import { API_URL, GLAUCOMA_API_S3_DOMAIN } from "@/lib/settings";
 
 export function FileTable() {
   const searchParams = useSearchParams()
@@ -38,12 +40,11 @@ export function FileTable() {
   const patient_id = searchParams.get('patient_id')
   console.log(patient_id)
 
-  let items: any[] = []
   let offset = 0;
   let total = 0;
 
   let itemPerPage = 100;
-
+  const [items, setItems] = useState<any[]>([])
   const [editingFile, setEditingFile] = useState<PatientFileDTO | null>(null)
   const [deletingFile, setDeletingFile] = useState<PatientFileDTO | null>(null)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
@@ -58,14 +59,14 @@ export function FileTable() {
   }, []);  // Empty dependency array ensures this runs only once when the component mounts
 
   async function fetchData() {
-    // try {
-    //   const response = await axios.get(API_URL + '/patient/list/' + user.id);
-    //   setItems(response.data);  // Store fetched data
-    // } catch (err) {
-    //   setError('Failed to load data');  // Handle error
-    // } finally {
-    //   setIsLoading(false);  // Set loading to false after data fetch or error
-    // }
+    try {
+      const response = await axios.get(API_URL + '/patient/list_patient_files/?patient_id=' + patient_id);
+      setItems(response.data);  // Store fetched data
+    } catch (err) {
+      // setError('Failed to load data');  // Handle error
+    } finally {
+      // setIsLoading(false);  // Set loading to false after data fetch or error
+    }
 
   }
 
@@ -76,6 +77,17 @@ export function FileTable() {
   function nextPage() {
     // router.push(`/?offset=${offset}`, { scroll: false });
   }
+  enum FileStatusValue {
+    Enqueue = 1,
+    Processing = 2,
+    Success = 3,
+    Error = 4,
+  }
+
+  function getStatus(fileStatusId:number):String {
+    return FileStatusValue[fileStatusId]
+  }
+
 
   return (
     <div>
@@ -92,14 +104,19 @@ export function FileTable() {
               <TableRow>
                 <TableHead>Path</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Glaucoma</TableHead>
                 <TableHead className="hidden md:table-cell">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {items.map((record) => (
                 <TableRow>
-                  <TableCell className="font-medium">{record.path}</TableCell>
-                  <TableCell className="font-medium">{record.file_status_name}</TableCell>
+                  <TableCell className="font-medium">
+                    <a target="_blank"  href={GLAUCOMA_API_S3_DOMAIN + record.path}>{record.path}
+                    <img src={GLAUCOMA_API_S3_DOMAIN + record.path} height={100} width={100}/></a>
+                  </TableCell>
+                  <TableCell className="font-medium">{getStatus(record.file_status_id)}</TableCell>
+                  <TableCell className="font-medium">{record.prediction_value == 1 ? 'Si' : record.prediction_value == 0 ? 'No' : 'N/A'}</TableCell>
                   <TableCell>
                     <form action={() => console.log('eliminar')}>
                       <button type="submit">Eliminar</button>
@@ -149,7 +166,7 @@ export function FileTable() {
           <DialogHeader>
             <DialogTitle>Agregar Imagen</DialogTitle>
           </DialogHeader>
-          <FileForm patient_id={Number(patient_id)} onSuccess={() => { }} />
+          <FileForm patient_id={Number(patient_id)} onSuccess={() => { setIsAddModalOpen(false); fetchData() }} />
           <DialogFooter>
           </DialogFooter>
         </DialogContent>

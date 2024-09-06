@@ -201,7 +201,7 @@ export default function PatientForm({ record, onSuccess, patient_id }: { record:
         </fieldset>
         <span className="spinner" />
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Loading" : "Submit"}
+          {isLoading ? "Cargando.." : "Guardar"}
         </Button>
 
       </form>

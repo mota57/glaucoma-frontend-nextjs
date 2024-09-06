@@ -83,7 +83,7 @@ export function PatientTable() {
   }
 
   function goToFiles(patient_id:any) {
-    router.push('/patients/files/'+patient_id);
+    router.push('/patients/files?patient_id='+patient_id);
   }
 
   function onCreateSuccess() {
@@ -133,8 +133,8 @@ export function PatientTable() {
                         </TableCell>
                         <TableCell>
                           <Button onClick={() => { setEditingPatient(record); setIsEditModalOpen(true) }}>Editar</Button>
-                          <Button onClick={() => { window.alert('todo') }}>Eliminar</Button>
-                          <Button onClick={() => { goToFiles(record.user_account_id) }}>Imagenes</Button>
+                          <Button style={{marginLeft:'10px'}} onClick={() => { goToFiles(record.user_account_id) }}>Imagenes</Button>
+                          <Button style={{marginLeft:'10px'}} className="bg-destructive" onClick={() => { window.alert('todo') }}>Eliminar</Button>
 
                         </TableCell>
                       </TableRow>

@@ -38,58 +38,64 @@ export default function FileForm({ patient_id, onSuccess }: { patient_id: number
   };
 
 
+
   async function handleUploadClick() {
+
     // Activate loader (show loader in UI)
+    if (!file) {
+      return;
+    }
     setLoading(true); // setLoading controls the state of a loader/spinner
 
-    try {
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64String = (reader.result as string).split(',')[1]; // Get the base64 string without the metadata
 
-      if (!file) {
-        return;
+      try {
+        const response = await axios.post(API_URL + '/patient/create_patient_file', {
+          user_account_id:patient_id,
+          file: base64String,
+          fileName: (file as any).name,
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        // Stop loading (hide loader in UI)
+        setLoading(false);
+
+        // Show success notification
+        toast({
+          title: "created",
+          description: "The file successfully created.",
+          duration: 3000,
+        });
+        onSuccess()
+      } catch (error) {
+        // Stop loading (hide loader in UI)
+        setLoading(false);
+
+        // Inform user about the error
+        toast({
+          title: "Error",
+          description: "There was an error creating the file. Please try again.",
+          duration: 3000,
+        });
+
+        console.error(error); // Log the error for debugging purposes
       }
+    };
+    reader.readAsDataURL(file as any);
 
-      // Example of uploading the file using the Fetch API
-      const formData = new FormData();
-
-      formData.append('file', file);
-      formData.append('patient_id', patient_id.toString())
-
-      // let userData = AppStorage.getUserData();
-      let response = await axios.post(API_URL + '/patient/create', formData);
-
-      console.log(response);
-
-      // Stop loading (hide loader in UI)
-      setLoading(false);
-
-      // Show success notification
-      toast({
-        title: "created",
-        description: "The file successfully created.",
-        duration: 3000,
-      });
-      onSuccess()
-    } catch (error) {
-      // Stop loading (hide loader in UI)
-      setLoading(false);
-
-      // Inform user about the error
-      toast({
-        title: "Error",
-        description: "There was an error creating the file. Please try again.",
-        duration: 3000,
-      });
-
-      console.error(error); // Log the error for debugging purposes
-    }
   }
 
   return (
     <div>
       <input type="file" onChange={handleFileChange} />
       {file && <div>{(file as any).name}</div>}
-      
-      <Button onClick={handleUploadClick}>Upload</Button>
+
+      <Button onClick={handleUploadClick}>Guardar</Button>
     </div>
 
   )
